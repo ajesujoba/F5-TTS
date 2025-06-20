@@ -32,6 +32,8 @@ from f5_tts.api import F5TTS
 from f5_tts.infer.utils_infer import transcribe
 from f5_tts.model.utils import convert_char_to_pinyin
 
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
 training_process = None
 system = platform.system()
@@ -41,10 +43,13 @@ last_checkpoint = ""
 last_device = ""
 last_ema = None
 
+# path_data = str(files("f5_tts").joinpath("../../data"))
+# path_project_ckpts = str(files("f5_tts").joinpath("../../ckpts"))
+# file_train = str(files("f5_tts").joinpath("train/finetune_cli.py"))
 
-path_data = str(files("f5_tts").joinpath("../../data"))
-path_project_ckpts = str(files("f5_tts").joinpath("../../ckpts"))
-file_train = str(files("f5_tts").joinpath("train/finetune_cli.py"))
+path_data = str(mypath.joinpath("../../data"))
+path_project_ckpts = str(mypath.joinpath("../../ckpts"))
+file_train = str(mypath.joinpath("train/finetune_cli.py"))
 
 device = (
     "cuda"

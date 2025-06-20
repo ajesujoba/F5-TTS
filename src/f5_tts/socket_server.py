@@ -24,6 +24,8 @@ from f5_tts.infer.utils_infer import (
     preprocess_ref_audio_text,
 )
 
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -80,7 +82,8 @@ class TTSStreamingProcessor:
             if torch.backends.mps.is_available()
             else "cpu"
         )
-        model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+        # model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+        model_cfg = OmegaConf.load(mypath.joinpath(f"configs/{model}.yaml")))
         self.model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
         self.model_arc = model_cfg.model.arch
         self.mel_spec_type = model_cfg.model.mel_spec.mel_spec_type

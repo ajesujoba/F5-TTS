@@ -31,6 +31,8 @@ from vocos import Vocos
 from f5_tts.model import CFM
 from f5_tts.model.utils import convert_char_to_pinyin, get_tokenizer
 
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
 _ref_audio_cache = {}
 _ref_text_cache = {}
@@ -244,7 +246,8 @@ def load_model(
     device=device,
 ):
     if vocab_file == "":
-        vocab_file = str(files("f5_tts").joinpath("infer/examples/vocab.txt"))
+        # vocab_file = str(files("f5_tts").joinpath("infer/examples/vocab.txt"))
+        vocab_file = str(mypath.joinpath("infer/examples/vocab.txt"))
     tokenizer = "custom"
 
     print("\nvocab : ", vocab_file)

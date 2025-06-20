@@ -30,6 +30,8 @@ from f5_tts.infer.utils_infer import (
     target_rms,
 )
 
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
 parser = argparse.ArgumentParser(
     prog="python3 infer-cli.py",
@@ -213,14 +215,17 @@ device = args.device or config.get("device", device)
 
 # patches for pip pkg user
 if "infer/examples/" in ref_audio:
-    ref_audio = str(files("f5_tts").joinpath(f"{ref_audio}"))
+    # ref_audio = str(files("f5_tts").joinpath(f"{ref_audio}"))
+    ref_audio = str(mypath.joinpath(f"{ref_audio}"))
 if "infer/examples/" in gen_file:
-    gen_file = str(files("f5_tts").joinpath(f"{gen_file}"))
+    # gen_file = str(files("f5_tts").joinpath(f"{gen_file}"))
+    gen_file = str(mypath.joinpath(f"{gen_file}"))
 if "voices" in config:
     for voice in config["voices"]:
         voice_ref_audio = config["voices"][voice]["ref_audio"]
         if "infer/examples/" in voice_ref_audio:
-            config["voices"][voice]["ref_audio"] = str(files("f5_tts").joinpath(f"{voice_ref_audio}"))
+            # config["voices"][voice]["ref_audio"] = str(files("f5_tts").joinpath(f"{voice_ref_audio}"))
+            config["voices"][voice]["ref_audio"] = str(mypath.joinpath(f"{voice_ref_audio}"))
 
 
 # ignore gen_text if gen_file provided
@@ -254,7 +259,8 @@ vocoder = load_vocoder(
 # load TTS model
 
 model_cfg = OmegaConf.load(
-    args.model_cfg or config.get("model_cfg", str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+    #args.model_cfg or config.get("model_cfg", str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+    args.model_cfg or config.get("model_cfg", str(mypath.joinpath(f"configs/{model}.yaml")))
 )
 model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
 model_arc = model_cfg.model.arch

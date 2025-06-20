@@ -19,6 +19,8 @@ from f5_tts.infer.utils_infer import (
 )
 from f5_tts.model.utils import seed_everything
 
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
 class F5TTS:
     def __init__(
@@ -32,7 +34,8 @@ class F5TTS:
         device=None,
         hf_cache_dir=None,
     ):
-        model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+        # model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+        model_cfg = OmegaConf.load(mypath.joinpath(f"configs/{model}.yaml")))
         model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
         model_arc = model_cfg.model.arch
 
@@ -152,12 +155,14 @@ class F5TTS:
 if __name__ == "__main__":
     f5tts = F5TTS()
 
+    # file_wave=str(files("f5_tts").joinpath("../../tests/api_out.wav")),
+    # file_spec=str(files("f5_tts").joinpath("../../tests/api_out.png")),
     wav, sr, spec = f5tts.infer(
         ref_file=str(files("f5_tts").joinpath("infer/examples/basic/basic_ref_en.wav")),
         ref_text="some call me nature, others call me mother nature.",
         gen_text="""I don't really care what you call me. I've been a silent spectator, watching species evolve, empires rise and fall. But always remember, I am mighty and enduring. Respect me and I'll nurture you; ignore me and you shall face the consequences.""",
-        file_wave=str(files("f5_tts").joinpath("../../tests/api_out.wav")),
-        file_spec=str(files("f5_tts").joinpath("../../tests/api_out.png")),
+        file_wave=str(mypath.joinpath("../../tests/api_out.wav")),  
+        file_spec=str(mypath.joinpath("../../tests/api_out.png")),
         seed=None,
     )
 

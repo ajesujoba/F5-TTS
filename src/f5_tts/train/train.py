@@ -9,12 +9,14 @@ from omegaconf import OmegaConf
 from f5_tts.model import CFM, Trainer
 from f5_tts.model.dataset import load_dataset
 from f5_tts.model.utils import get_tokenizer
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
+# os.chdir(str(files("f5_tts").joinpath("../..")))  # change working directory to root of project (local editable)
+os.chdir(str(mypath.joinpath("../..")))  # change working directory to root of project (local editable)
 
-os.chdir(str(files("f5_tts").joinpath("../..")))  # change working directory to root of project (local editable)
-
-
-@hydra.main(version_base="1.3", config_path=str(files("f5_tts").joinpath("configs")), config_name=None)
+#@hydra.main(version_base="1.3", config_path=str(files("f5_tts").joinpath("configs")), config_name=None)
+@hydra.main(version_base="1.3", config_path=str(mypath.joinpath("configs")), config_name=None)
 def main(model_cfg):
     model_cls = hydra.utils.get_class(f"f5_tts.model.{model_cfg.model.backbone}")
     model_arc = model_cfg.model.arch
@@ -39,6 +41,7 @@ def main(model_cfg):
     )
 
     # init trainer
+    # checkpoint_path=str(files("f5_tts").joinpath(f"../../{model_cfg.ckpts.save_dir}")),
     trainer = Trainer(
         model,
         epochs=model_cfg.optim.epochs,
@@ -46,7 +49,7 @@ def main(model_cfg):
         num_warmup_updates=model_cfg.optim.num_warmup_updates,
         save_per_updates=model_cfg.ckpts.save_per_updates,
         keep_last_n_checkpoints=model_cfg.ckpts.keep_last_n_checkpoints,
-        checkpoint_path=str(files("f5_tts").joinpath(f"../../{model_cfg.ckpts.save_dir}")),
+        checkpoint_path=str(mypath.joinpath(f"../../{model_cfg.ckpts.save_dir}")),
         batch_size_per_gpu=model_cfg.datasets.batch_size_per_gpu,
         batch_size_type=model_cfg.datasets.batch_size_type,
         max_samples=model_cfg.datasets.max_samples,

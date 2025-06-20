@@ -15,8 +15,11 @@ import numpy as np
 
 from f5_tts.eval.utils_eval import get_seed_tts_test, run_asr_wer, run_sim
 
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
-rel_path = str(files("f5_tts").joinpath("../../"))
+# rel_path = str(files("f5_tts").joinpath("../../"))
+rel_path = str(mypath.joinpath("../../"))
 
 
 def get_args():

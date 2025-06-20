@@ -24,6 +24,8 @@ from f5_tts.infer.utils_infer import load_checkpoint, load_vocoder
 from f5_tts.model import CFM
 from f5_tts.model.utils import get_tokenizer
 
+from pathlib import Path
+mypath = Path("/data/users/jalabi/Internship_NII/F5-TTS3/src/f5_tts")
 
 accelerator = Accelerator()
 device = f"cuda:{accelerator.process_index}"
@@ -33,7 +35,8 @@ use_ema = True
 target_rms = 0.1
 
 
-rel_path = str(files("f5_tts").joinpath("../../"))
+# rel_path = str(files("f5_tts").joinpath("../../"))
+rel_path = str(mypath.joinpath("../../"))
 
 
 def main():
@@ -67,7 +70,8 @@ def main():
     use_truth_duration = False
     no_ref_audio = False
 
-    model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{exp_name}.yaml")))
+    # model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{exp_name}.yaml")))
+    model_cfg = OmegaConf.load(str(mypath.joinpath(f"configs/{exp_name}.yaml")))
     model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
     model_arc = model_cfg.model.arch
 
