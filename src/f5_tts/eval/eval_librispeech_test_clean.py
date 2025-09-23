@@ -16,7 +16,16 @@ import numpy as np
 from f5_tts.eval.utils_eval import get_librispeech_test, run_asr_wer, run_sim
 
 
-rel_path = str(files("f5_tts").joinpath("../../"))
+workpath = None
+import os
+DIRWORK = os.environ.get("DIRWORK")
+
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+    rel_path = str(workpath.joinpath("../../"))
+else:
+    rel_path = str(files("f5_tts").joinpath("../../"))
 
 
 def get_args():

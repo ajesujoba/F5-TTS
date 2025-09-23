@@ -32,8 +32,16 @@ device = f"cuda:{accelerator.process_index}"
 use_ema = True
 target_rms = 0.1
 
+workpath = None
+import os
+DIRWORK = os.environ.get("DIRWORK")
 
-rel_path = str(files("f5_tts").joinpath("../../"))
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+    rel_path = str(workpath.joinpath("../../"))
+else:
+    rel_path = str(files("f5_tts").joinpath("../../"))
 
 
 def main():
@@ -67,7 +75,10 @@ def main():
     use_truth_duration = False
     no_ref_audio = False
 
-    model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{exp_name}.yaml")))
+    if workpath is not None:
+        model_cfg = OmegaConf.load(str(workpath.joinpath(f"configs/{exp_name}.yaml")))
+    else:
+        model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{exp_name}.yaml")))
     model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
     model_arc = model_cfg.model.arch
 

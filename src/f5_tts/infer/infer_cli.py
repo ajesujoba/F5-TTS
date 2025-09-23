@@ -32,6 +32,14 @@ from f5_tts.infer.utils_infer import (
 )
 
 
+workpath = None
+import os
+DIRWORK = os.environ.get("DIRWORK")
+
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+
 parser = argparse.ArgumentParser(
     prog="python3 infer-cli.py",
     description="Commandline interface for E2/F5 TTS with Advanced Batch Processing.",
@@ -225,7 +233,10 @@ device = args.device or config.get("device", device)
 
 # patches for pip pkg user
 if "infer/examples/" in ref_audio:
-    ref_audio = str(files("f5_tts").joinpath(f"{ref_audio}"))
+    if workpath is not None:
+        ref_audio = str(workpath.joinpath(f"{ref_audio}"))
+    else:
+        ref_audio = str(files("f5_tts").joinpath(f"{ref_audio}"))
 if "infer/examples/" in gen_file:
     gen_file = str(files("f5_tts").joinpath(f"{gen_file}"))
 if "voices" in config:

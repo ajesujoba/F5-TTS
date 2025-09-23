@@ -28,6 +28,13 @@ from f5_tts.infer.utils_infer import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+workpath = None
+import os
+DIRWORK = os.environ.get("DIRWORK")
+
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
 
 class AudioFileWriterThread(threading.Thread):
     """Threaded file writer to avoid blocking the TTS streaming process."""
@@ -80,7 +87,10 @@ class TTSStreamingProcessor:
             if torch.backends.mps.is_available()
             else "cpu"
         )
-        model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+        if workpath is not None:
+            model_cfg = OmegaConf.load(str(workpath.joinpath(f"configs/{model}.yaml")))
+        else:
+            model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
         self.model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
         self.model_arc = model_cfg.model.arch
         self.mel_spec_type = model_cfg.model.mel_spec.mel_spec_type

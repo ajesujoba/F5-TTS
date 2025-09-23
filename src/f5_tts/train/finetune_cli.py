@@ -9,6 +9,13 @@ from f5_tts.model import CFM, DiT, Trainer, UNetT
 from f5_tts.model.dataset import load_dataset
 from f5_tts.model.utils import get_tokenizer
 
+workpath = None
+import os
+DIRWORK = os.environ.get("DIRWORK")
+
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
 
 # -------------------------- Dataset Settings --------------------------- #
 target_sample_rate = 24000
@@ -81,7 +88,10 @@ def parse_args():
 def main():
     args = parse_args()
 
-    checkpoint_path = str(files("f5_tts").joinpath(f"../../ckpts/{args.dataset_name}"))
+    if workpath is not None:
+        checkpoint_path = str(workpath.joinpath(f"../../ckpts/{args.dataset_name}"))
+    else:
+        checkpoint_path = str(files("f5_tts").joinpath(f"../../ckpts/{args.dataset_name}"))
 
     # Model parameters based on experiment name
 

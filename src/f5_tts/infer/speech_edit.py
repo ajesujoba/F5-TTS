@@ -17,6 +17,14 @@ from f5_tts.model import CFM
 from f5_tts.model.utils import convert_char_to_pinyin, get_tokenizer
 
 
+workpath = None
+import os
+DIRWORK = os.environ.get("DIRWORK")
+
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+
 device = (
     "cuda"
     if torch.cuda.is_available()
@@ -43,7 +51,10 @@ speed = 1.0
 target_rms = 0.1
 
 
-model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{exp_name}.yaml")))
+if workpath is not None:
+    model_cfg = OmegaConf.load(str(workpath.joinpath(f"configs/{exp_name}.yaml")))
+else:
+    model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{exp_name}.yaml")))
 model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
 model_arc = model_cfg.model.arch
 
@@ -71,7 +82,10 @@ output_dir = "tests"
 # [--language "zho" for Chinese, "eng" for English]
 # [if local ckpt, set --alignment_model "../checkpoints/mms-300m-1130-forced-aligner"]
 
-audio_to_edit = str(files("f5_tts").joinpath("infer/examples/basic/basic_ref_en.wav"))
+if workpath is not None:
+    audio_to_edit = str(workpath.joinpath("infer/examples/basic/basic_ref_en.wav"))
+else:
+    audio_to_edit = str(files("f5_tts").joinpath("infer/examples/basic/basic_ref_en.wav"))
 origin_text = "Some call me nature, others call me mother nature."
 target_text = "Some call me optimist, others call me realist."
 parts_to_edit = [
