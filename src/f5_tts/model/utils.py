@@ -126,7 +126,7 @@ def get_tokenizer(dataset_name, tokenizer: str = "pinyin"):
     """
     if tokenizer in ["pinyin", "char"]:
         if workpath is not None:
-            tokenizer_path = os.path.join(files("f5_tts").joinpath("../../data"), f"{dataset_name}_{tokenizer}/vocab.txt")
+            tokenizer_path = os.path.join(workpath.joinpath("../../data"), f"{dataset_name}_{tokenizer}/vocab.txt")
         else:
             tokenizer_path = os.path.join(files("f5_tts").joinpath("../../data"), f"{dataset_name}_{tokenizer}/vocab.txt")
         with open(tokenizer_path, "r", encoding="utf-8") as f:
