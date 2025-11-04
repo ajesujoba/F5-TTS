@@ -11,10 +11,19 @@ from f5_tts.model.dataset import load_dataset
 from f5_tts.model.utils import get_tokenizer
 
 
-os.chdir(str(files("f5_tts").joinpath("../..")))  # change working directory to root of project (local editable)
+workpath = None
+DIRWORK = os.environ.get("DIRWORK")
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+    os.chdir(str(workpath.joinpath("../..")))  # change working directory to root of project (local editable)
+    config_path = str(workpath.joinpath("configs"))
+else:
+    os.chdir(str(files("f5_tts").joinpath("../..")))  # change working directory to root of project (local editable)
+    config_path = str(files("f5_tts").joinpath("configs"))
 
 
-@hydra.main(version_base="1.3", config_path=str(files("f5_tts").joinpath("configs")), config_name=None)
+@hydra.main(version_base="1.3", config_path=config_path, config_name=None)
 def main(model_cfg):
     model_cls = hydra.utils.get_class(f"f5_tts.model.{model_cfg.model.backbone}")
     model_arc = model_cfg.model.arch
@@ -37,6 +46,10 @@ def main(model_cfg):
         mel_spec_kwargs=model_cfg.model.mel_spec,
         vocab_char_map=vocab_char_map,
     )
+    if workpath is not None:
+        checkpoint_path=str(workpath.joinpath(f"../../{model_cfg.ckpts.save_dir}"))
+    else:
+        checkpoint_path=str(files("f5_tts").joinpath(f"../../{model_cfg.ckpts.save_dir}"))
 
     # init trainer
     trainer = Trainer(
@@ -46,7 +59,7 @@ def main(model_cfg):
         num_warmup_updates=model_cfg.optim.num_warmup_updates,
         save_per_updates=model_cfg.ckpts.save_per_updates,
         keep_last_n_checkpoints=model_cfg.ckpts.keep_last_n_checkpoints,
-        checkpoint_path=str(files("f5_tts").joinpath(f"../../{model_cfg.ckpts.save_dir}")),
+        checkpoint_path=checkpoint_path,
         batch_size_per_gpu=model_cfg.datasets.batch_size_per_gpu,
         batch_size_type=model_cfg.datasets.batch_size_type,
         max_samples=model_cfg.datasets.max_samples,

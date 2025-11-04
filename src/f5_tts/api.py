@@ -19,6 +19,12 @@ from f5_tts.infer.utils_infer import (
 )
 from f5_tts.model.utils import seed_everything
 
+import os
+workpath = None
+DIRWORK = os.environ.get("DIRWORK")
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
 
 class F5TTS:
     def __init__(
@@ -32,7 +38,11 @@ class F5TTS:
         device=None,
         hf_cache_dir=None,
     ):
-        model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+        if workpath is not None:
+            model_cfg = OmegaConf.load(str(workpath.joinpath(f"configs/{model}.yaml")))
+        else:
+            model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
+        # model_cfg = OmegaConf.load(str(files("f5_tts").joinpath(f"configs/{model}.yaml")))
         model_cls = get_class(f"f5_tts.model.{model_cfg.model.backbone}")
         model_arc = model_cfg.model.arch
 
@@ -152,12 +162,19 @@ class F5TTS:
 if __name__ == "__main__":
     f5tts = F5TTS()
 
+    if workpath is not None:
+        file_wave=str(workpath.joinpath("../../tests/api_out.wav"))
+        file_spec=str(workpath.joinpath("../../tests/api_out.png"))
+    else:
+        file_wave=str(files("f5_tts").joinpath("../../tests/api_out.wav"))
+        file_spec=str(files("f5_tts").joinpath("../../tests/api_out.png"))
+
     wav, sr, spec = f5tts.infer(
         ref_file=str(files("f5_tts").joinpath("infer/examples/basic/basic_ref_en.wav")),
         ref_text="Some call me nature, others call me mother nature.",
         gen_text="I don't really care what you call me. I've been a silent spectator, watching species evolve, empires rise and fall. But always remember, I am mighty and enduring.",
-        file_wave=str(files("f5_tts").joinpath("../../tests/api_out.wav")),
-        file_spec=str(files("f5_tts").joinpath("../../tests/api_out.png")),
+        file_wave=file_wave,
+        file_spec=file_spec,
         seed=None,
     )
 

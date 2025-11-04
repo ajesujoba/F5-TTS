@@ -42,9 +42,18 @@ last_device = ""
 last_ema = None
 
 
-path_data = str(files("f5_tts").joinpath("../../data"))
-path_project_ckpts = str(files("f5_tts").joinpath("../../ckpts"))
-file_train = str(files("f5_tts").joinpath("train/finetune_cli.py"))
+workpath = None
+DIRWORK = os.environ.get("DIRWORK")
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+    path_data = str(workpath.joinpath("../../data"))
+    path_project_ckpts = str(workpath.joinpath("../../ckpts"))
+    file_train = str(workpath.joinpath("train/finetune_cli.py"))
+else:
+    path_data = str(files("f5_tts").joinpath("../../data"))
+    path_project_ckpts = str(files("f5_tts").joinpath("../../ckpts"))
+    file_train = str(files("f5_tts").joinpath("train/finetune_cli.py"))
 
 device = (
     "cuda"

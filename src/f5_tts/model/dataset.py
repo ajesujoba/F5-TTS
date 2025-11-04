@@ -13,6 +13,12 @@ from tqdm import tqdm
 from f5_tts.model.modules import MelSpec
 from f5_tts.model.utils import default
 
+workpath = None
+import os
+DIRWORK = os.environ.get("DIRWORK")
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
 
 class HFDataset(Dataset):
     def __init__(
@@ -256,7 +262,10 @@ def load_dataset(
     print("Loading dataset ...")
 
     if dataset_type == "CustomDataset":
-        rel_data_path = str(files("f5_tts").joinpath(f"../../data/{dataset_name}_{tokenizer}"))
+        if workpath is not None:
+            rel_data_path = str(workpath.joinpath(f"../../data/{dataset_name}_{tokenizer}"))
+        else:
+            rel_data_path = str(files("f5_tts").joinpath(f"../../data/{dataset_name}_{tokenizer}"))
         if audio_type == "raw":
             try:
                 train_dataset = load_from_disk(f"{rel_data_path}/raw")
@@ -296,9 +305,14 @@ def load_dataset(
             + "May also the corresponding script cuz different dataset may have different format."
         )
         pre, post = dataset_name.split("_")
-        train_dataset = HFDataset(
-            load_dataset(f"{pre}/{pre}", split=f"train.{post}", cache_dir=str(files("f5_tts").joinpath("../../data"))),
-        )
+        if workpath is not None:
+            train_dataset = HFDataset(
+                load_dataset(f"{pre}/{pre}", split=f"train.{post}", cache_dir=str(workpath.joinpath("../../data"))),
+            )
+        else:
+            train_dataset = HFDataset(
+                load_dataset(f"{pre}/{pre}", split=f"train.{post}", cache_dir=str(files("f5_tts").joinpath("../../data"))),
+            )
 
     return train_dataset
 

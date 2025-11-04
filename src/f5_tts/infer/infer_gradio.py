@@ -19,6 +19,12 @@ import torchaudio
 from cached_path import cached_path
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+workpath = None
+DIRWORK = os.environ.get("DIRWORK")
+
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
 
 try:
     import spaces
@@ -958,7 +964,10 @@ If you're having issues, try converting your reference audio to WAV or MP3, clip
 """
     )
 
-    last_used_custom = files("f5_tts").joinpath("infer/.cache/last_used_custom_model_info_v1.txt")
+    if workpath is not None:
+        last_used_custom = workpath.joinpath("infer/.cache/last_used_custom_model_info_v1.txt")
+    else:
+        last_used_custom = files("f5_tts").joinpath("infer/.cache/last_used_custom_model_info_v1.txt")
 
     def load_last_used_custom():
         try:
