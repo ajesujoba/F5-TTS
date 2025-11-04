@@ -54,7 +54,7 @@ def get_tokenizer(vocab_file_path: str):
     return vocab_char_map, vocab_size
 
 
-def convert_char_to_pinyin(reference_target_texts_list, polyphone=True):
+def convert_char_to_pinyin_old(reference_target_texts_list, polyphone=True):
     final_reference_target_texts_list = []
     custom_trans = str.maketrans(
         {";": ",", "“": '"', "”": '"', "‘": "'", "’": "'"}
@@ -91,6 +91,51 @@ def convert_char_to_pinyin(reference_target_texts_list, polyphone=True):
 
     return final_reference_target_texts_list
 
+def convert_char_to_pinyin(reference_target_texts_list, polyphone=True):
+    final_reference_target_texts_list = []
+    custom_trans = str.maketrans(
+        {";": ",", "“": '"', "”": '"', "‘": "'", "’": "'"}
+    )  # add custom trans here, to address oov
+
+    def is_chinese(c):
+        return "\u3100" <= c <= "\u9fff"  # common chinese characters
+
+    for text in reference_target_texts_list:
+        char_list = []
+        text = text.translate(custom_trans)
+
+        # ✅ Keep <<token>> if it is the first element in the line
+        token_match = re.match(r'^<<(.*?)>>', text)
+        if token_match:
+            token = token_match.group(0)
+            char_list.append(token)
+            text = text[len(token):]
+
+        for seg in jieba.cut(text):
+            seg_byte_len = len(bytes(seg, "UTF-8"))
+            if seg_byte_len == len(seg):  # pure alphabets and symbols
+                if char_list and seg_byte_len > 1 and char_list[-1] not in " :'\"":
+                    char_list.append(" ")
+                char_list.extend(seg)
+            elif polyphone and seg_byte_len == 3 * len(seg):  # pure Chinese
+                seg_ = lazy_pinyin(seg, style=Style.TONE3, tone_sandhi=True)
+                for i, c in enumerate(seg):
+                    if is_chinese(c):
+                        char_list.append(" ")
+                    char_list.append(seg_[i])
+            else:  # mixed chars
+                for c in seg:
+                    if ord(c) < 256:
+                        char_list.extend(c)
+                    elif is_chinese(c):
+                        char_list.append(" ")
+                        char_list.extend(lazy_pinyin(c, style=Style.TONE3, tone_sandhi=True))
+                    else:
+                        char_list.append(c)
+
+        final_reference_target_texts_list.append(char_list)
+
+    return final_reference_target_texts_list
 
 def list_str_to_idx(
     text: list[str] | list[list[str]],

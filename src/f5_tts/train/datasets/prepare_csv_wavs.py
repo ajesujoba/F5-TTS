@@ -141,6 +141,10 @@ def prepare_csv_wavs_dir(input_dir, num_workers=None):
     raw_texts = [item[1] for item in processed]
     converted_texts = batch_convert_texts(raw_texts, polyphone, batch_size=BATCH_SIZE)
 
+    print(raw_texts)
+    print(converted_texts)
+
+
     # Prepare final results
     sub_result = []
     durations = []
