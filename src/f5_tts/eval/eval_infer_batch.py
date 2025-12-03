@@ -32,8 +32,14 @@ device = f"cuda:{accelerator.process_index}"
 use_ema = True
 target_rms = 0.1
 
-
-rel_path = str(files("f5_tts").joinpath("../../"))
+workpath = None
+DIRWORK = os.environ.get("DIRWORK")
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+    rel_path = str(workpath.joinpath("../../"))
+else:
+    rel_path = str(files("f5_tts").joinpath("../../"))
 
 
 def main():

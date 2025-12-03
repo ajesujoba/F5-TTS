@@ -11,10 +11,20 @@ from f5_tts.model.dataset import load_dataset
 from f5_tts.model.utils import get_tokenizer
 
 
-os.chdir(str(files("f5_tts").joinpath("../..")))  # change working directory to root of project (local editable)
+# os.chdir(str(files("f5_tts").joinpath("../..")))  # change working directory to root of project (local editable)
+workpath = None
+DIRWORK = os.environ.get("DIRWORK")
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+    os.chdir(str(workpath.joinpath("../..")))  # change working directory to root of project (local editable)
+    config_path = str(workpath.joinpath("configs"))
+else:
+    os.chdir(str(files("f5_tts").joinpath("../..")))  # change working directory to root of project (local editable)
+    config_path = str(files("f5_tts").joinpath("configs"))
 
 
-@hydra.main(version_base="1.3", config_path=str(files("f5_tts").joinpath("configs")), config_name=None)
+@hydra.main(version_base="1.3", config_path=config_path, config_name=None)
 def main(model_cfg):
     model_cls = hydra.utils.get_class(f"f5_tts.model.{model_cfg.model.backbone}")
     model_arc = model_cfg.model.arch

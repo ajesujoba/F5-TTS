@@ -17,7 +17,14 @@ import numpy as np
 from f5_tts.eval.utils_eval import get_seed_tts_test, run_asr_wer, run_sim
 
 
-rel_path = str(files("f5_tts").joinpath("../../"))
+workpath = None
+DIRWORK = os.environ.get("DIRWORK")
+if DIRWORK is not None:
+    from pathlib import Path
+    workpath = Path(DIRWORK)
+    rel_path = str(workpath.joinpath("../../"))
+else:
+    rel_path = str(files("f5_tts").joinpath("../../"))
 
 
 def get_args():
@@ -50,7 +57,7 @@ def main():
     eval_task = args.eval_task
     lang = args.lang
     gen_wav_dir = args.gen_wav_dir
-    metalst = rel_path + f"/data/seedtts_testset/{lang}/meta.lst"  # seed-tts testset
+    metalst = rel_path + f"/data/seedtts_testset/{lang}/meta.lst" # seed-tts testset
 
     # NOTE. paraformer-zh result will be slightly different according to the number of gpus, cuz batchsize is different
     #       zh 1.254 seems a result of 4 workers wer_seed_tts
